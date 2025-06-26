@@ -52,16 +52,20 @@ const HospitalApp = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
 
+  // Check if user is logged in on initial load
   useEffect(() => {
     if (token) {
-      // Verify token and get user info
-      api.get('/user', token)
-        .then(res => res.json())
-        .then(data => setUser(data))
-        .catch(() => {
-          localStorage.removeItem('token');
-          setToken(null);
-        });
+      const verifyToken = async () => {
+        try {
+          const response = await api.get('/user', token);
+          const data = await response.json();
+          setUser(data);
+        } catch (error) {
+          console.error('Error verifying token:', error);
+          handleLogout();
+        }
+      };
+      verifyToken();
     }
   }, [token]);
 
@@ -76,36 +80,87 @@ const HospitalApp = () => {
         setToken(data.access_token);
         setUser(data.user);
       } else {
-        alert('Login failed: ' + data.message);
+        alert('Login failed: ' + (data.message || 'Invalid credentials'));
       }
     } catch (error) {
       alert('Login error: ' + error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
     setActiveTab('dashboard');
   };
 
+  // Show login screen if no token
   if (!token) {
     return <LoginForm onLogin={login} loading={loading} />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header user={user} onLogout={logout} />
+      {/* Header */}
+      <header className="bg-blue-600 text-white p-4 shadow-md">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">SIRS - Rawat Jalan</h1>
+          <div className="flex items-center space-x-4">
+            <span>Welcome, {user?.nama_lengkap} ({user?.role})</span>
+            <button
+              onClick={handleLogout}
+              className="bg-blue-700 px-3 py-1 rounded hover:bg-blue-800"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
       <div className="flex">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} userRole={user?.role} />
+        {/* Sidebar */}
+        <aside className="w-64 bg-white shadow-md">
+          <nav className="p-4">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: Users, roles: ['admin', 'dokter', 'apoteker'] },
+              { id: 'pasiens', label: 'Pasien', icon: Users, roles: ['admin', 'dokter'] },
+              { id: 'kunjungans', label: 'Kunjungan', icon: Calendar, roles: ['admin', 'dokter'] },
+              { id: 'obats', label: 'Obat', icon: Pill, roles: ['admin', 'apoteker'] },
+              { id: 'reseps', label: 'Resep', icon: FileText, roles: ['admin', 'dokter', 'apoteker'] },
+              { id: 'users', label: 'User', icon: Users, roles: ['admin'] },
+            ]
+            .filter(item => item.roles.includes(user?.role))
+            .map(item => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center space-x-2 p-3 rounded-lg mb-2 text-left ${
+                    activeTab === item.id 
+                      ? 'bg-blue-500 text-white' 
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Content Area */}
         <main className="flex-1 p-6">
           {activeTab === 'dashboard' && <Dashboard token={token} />}
           {activeTab === 'pasiens' && <PasienManager token={token} />}
           {activeTab === 'kunjungans' && <KunjunganManager token={token} />}
           {activeTab === 'obats' && <ObatManager token={token} />}
           {activeTab === 'reseps' && <ResepManager token={token} />}
+          {activeTab === 'users' && user?.role === 'admin' && <UserManager token={token} />}
         </main>
       </div>
     </div>
@@ -197,6 +252,7 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
     { id: 'kunjungans', label: 'Kunjungan', icon: Calendar, roles: ['admin', 'dokter'] },
     { id: 'obats', label: 'Obat', icon: Pill, roles: ['admin', 'apoteker'] },
     { id: 'reseps', label: 'Resep', icon: FileText, roles: ['admin', 'dokter', 'apoteker'] },
+    { id: 'users', label: 'User', icon: Users, roles: ['admin'] },
   ];
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(userRole));
@@ -527,42 +583,32 @@ const KunjunganManager = ({ token }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [pasiens, setPasiens] = useState([]);
   const [dokters, setDokters] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // Fetch all required data
   useEffect(() => {
-    fetchKunjungans();
-    fetchPasiens();
-    fetchDokters();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch all data in parallel
+        const [kunjungansRes, pasiensRes, doktersRes] = await Promise.all([
+          api.get('/kunjungans', token),
+          api.get('/pasiens', token),
+          api.get('/users?role=dokter', token)
+        ]);
 
-  const fetchKunjungans = async () => {
-    try {
-      const response = await api.get('/kunjungans', token);
-      const data = await response.json();
-      setKunjungans(data);
-    } catch (error) {
-      console.error('Error fetching kunjungans:', error);
-    }
-  };
+        setKunjungans(await kunjungansRes.json());
+        setPasiens(await pasiensRes.json());
+        setDokters(await doktersRes.json());
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchPasiens = async () => {
-    try {
-      const response = await api.get('/pasiens', token);
-      const data = await response.json();
-      setPasiens(data);
-    } catch (error) {
-      console.error('Error fetching pasiens:', error);
-    }
-  };
-
-  const fetchDokters = async () => {
-    try {
-      const response = await api.get('/users?role=dokter', token);
-      const data = await response.json();
-      setDokters(data);
-    } catch (error) {
-      console.error('Error fetching dokters:', error);
-    }
-  };
+    fetchData();
+  }, [token]);
 
   const handleSubmit = async (formData) => {
     try {
@@ -571,12 +617,14 @@ const KunjunganManager = ({ token }) => {
       } else {
         await api.post('/kunjungans', formData, token);
       }
-      fetchKunjungans();
+      // Refresh the data
+      const res = await api.get('/kunjungans', token);
+      setKunjungans(await res.json());
       setShowForm(false);
       setEditingKunjungan(null);
     } catch (error) {
       console.error('Error saving kunjungan:', error);
-      alert('Error saving kunjungan: ' + error.message);
+      alert('Error: ' + (error.message || 'Gagal menyimpan kunjungan'));
     }
   };
 
@@ -584,7 +632,7 @@ const KunjunganManager = ({ token }) => {
     if (confirm('Yakin ingin menghapus kunjungan ini?')) {
       try {
         await api.delete(`/kunjungans/${id}`, token);
-        fetchKunjungans();
+        setKunjungans(kunjungans.filter(k => k.id !== id));
       } catch (error) {
         console.error('Error deleting kunjungan:', error);
       }
@@ -594,16 +642,18 @@ const KunjunganManager = ({ token }) => {
   const handleCompleteKunjungan = async (id) => {
     try {
       await api.put(`/kunjungans/${id}`, { status_kunjungan: 'selesai' }, token);
-      fetchKunjungans();
+      setKunjungans(kunjungans.map(k => 
+        k.id === id ? { ...k, status_kunjungan: 'selesai' } : k
+      ));
     } catch (error) {
       console.error('Error completing kunjungan:', error);
     }
   };
 
   const filteredKunjungans = kunjungans.filter(kunjungan =>
-    kunjungan.pasien?.nama_pasien.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    kunjungan.dokter?.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    kunjungan.no_antrian.toLowerCase().includes(searchTerm.toLowerCase())
+    kunjungan.pasien?.nama_pasien?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    kunjungan.dokter?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (kunjungan.no_antrian?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -633,71 +683,79 @@ const KunjunganManager = ({ token }) => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">No. Antrian</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Pasien</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Dokter</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Tanggal</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredKunjungans.map(kunjungan => (
-                <tr key={kunjungan.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm">{kunjungan.no_antrian}</td>
-                  <td className="px-4 py-3 text-sm font-medium">{kunjungan.pasien?.nama_pasien}</td>
-                  <td className="px-4 py-3 text-sm">{kunjungan.dokter?.nama_lengkap}</td>
-                  <td className="px-4 py-3 text-sm">
-                    {new Date(kunjungan.tanggal_kunjungan).toLocaleDateString()} {kunjungan.jam_kunjungan}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      kunjungan.status_kunjungan === 'selesai' ? 'bg-green-100 text-green-800' :
-                      kunjungan.status_kunjungan === 'batal' ? 'bg-red-100 text-red-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {kunjungan.status_kunjungan}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => {
-                          setEditingKunjungan(kunjungan);
-                          setShowForm(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-800"
-                        title="Edit"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      {kunjungan.status_kunjungan === 'menunggu' && (
-                        <button
-                          onClick={() => handleCompleteKunjungan(kunjungan.id)}
-                          className="text-green-600 hover:text-green-800"
-                          title="Selesaikan"
-                        >
-                          <FileText size={16} />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDelete(kunjungan.id)}
-                        className="text-red-600 hover:text-red-800"
-                        title="Hapus"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+        {loading ? (
+          <div className="p-4 text-center">Memuat data...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">No. Antrian</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Pasien</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Dokter</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Tanggal</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredKunjungans.map(kunjungan => (
+                  <tr key={kunjungan.id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm">{kunjungan.no_antrian}</td>
+                    <td className="px-4 py-3 text-sm font-medium">
+                      {kunjungan.pasien?.nama_pasien || 'Pasien tidak ditemukan'}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {kunjungan.dokter?.nama_lengkap || 'Dokter tidak ditemukan'}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {new Date(kunjungan.tanggal_kunjungan).toLocaleDateString()} {kunjungan.jam_kunjungan}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        kunjungan.status_kunjungan === 'selesai' ? 'bg-green-100 text-green-800' :
+                        kunjungan.status_kunjungan === 'batal' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {kunjungan.status_kunjungan}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => {
+                            setEditingKunjungan(kunjungan);
+                            setShowForm(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Edit"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        {kunjungan.status_kunjungan === 'menunggu' && (
+                          <button
+                            onClick={() => handleCompleteKunjungan(kunjungan.id)}
+                            className="text-green-600 hover:text-green-800"
+                            title="Selesaikan"
+                          >
+                            <FileText size={16} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(kunjungan.id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Hapus"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {showForm && (
@@ -1706,6 +1764,259 @@ const UpdateDashboard = ({ token }) => {
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const UserManager = ({ token }) => {
+  const [users, setUsers] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/users', token);
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (formData) => {
+    try {
+      if (editingUser) {
+        await api.put(`/users/${editingUser.id}`, formData, token);
+      } else {
+        await api.post('/users', formData, token);
+      }
+      fetchUsers();
+      setShowForm(false);
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Error saving user:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Yakin ingin menonaktifkan user ini?')) {
+      try {
+        await api.delete(`/users/${id}`, token);
+        fetchUsers();
+      } catch (error) {
+        console.error('Error deactivating user:', error);
+      }
+    }
+  };
+
+  const filteredUsers = users.filter(user =>
+    user.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Manajemen User</h2>
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
+        >
+          <Plus size={20} />
+          <span>Tambah User</span>
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="p-4 border-b">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Cari user..."
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Username</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Nama Lengkap</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Role</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr key={user.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm">{user.username}</td>
+                  <td className="px-4 py-3 text-sm font-medium">{user.nama_lengkap}</td>
+                  <td className="px-4 py-3 text-sm capitalize">{user.role}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {user.is_active ? 'Aktif' : 'Nonaktif'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => {
+                          setEditingUser(user);
+                          setShowForm(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showForm && (
+        <UserForm
+          user={editingUser}
+          onSubmit={handleSubmit}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingUser(null);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+const UserForm = ({ user, onSubmit, onCancel }) => {
+  const [formData, setFormData] = useState({
+    username: user?.username || '',
+    password: '',
+    nama_lengkap: user?.nama_lengkap || '',
+    role: user?.role || 'dokter',
+    is_active: user?.is_active ?? true
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg w-96 max-h-screen overflow-y-auto">
+        <h3 className="text-lg font-bold mb-4">
+          {user ? 'Edit User' : 'Tambah User'}
+        </h3>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Username</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">
+              {user ? 'Password (Biarkan kosong jika tidak ingin mengubah)' : 'Password'}
+            </label>
+            <input
+              type="password"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              required={!user}
+              minLength="6"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Nama Lengkap</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={formData.nama_lengkap}
+              onChange={(e) => setFormData({...formData, nama_lengkap: e.target.value})}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Role</label>
+            <select
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={formData.role}
+              onChange={(e) => setFormData({...formData, role: e.target.value})}
+              required
+            >
+              <option value="admin">Admin</option>
+              <option value="dokter">Dokter</option>
+              <option value="apoteker">Apoteker</option>
+            </select>
+          </div>
+
+          {user && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Status</label>
+              <select
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                value={formData.is_active}
+                onChange={(e) => setFormData({...formData, is_active: e.target.value === 'true'})}
+              >
+                <option value={true}>Aktif</option>
+                <option value={false}>Nonaktif</option>
+              </select>
+            </div>
+          )}
+
+          <div className="flex space-x-4">
+            <button
+              type="submit"
+              className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+            >
+              {user ? 'Update' : 'Simpan'}
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+            >
+              Batal
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

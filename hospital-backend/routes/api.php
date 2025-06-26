@@ -39,9 +39,29 @@ Route::middleware('auth:sanctum')->group(function () {
             'resep_menunggu' => \App\Models\Resep::where('status_resep', 'menunggu')->count(),
         ]);
     });
+
+    // User routes
+    Route::apiResource('users', UserController::class);
 });
 
 // Public routes for testing
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working!']);
 });
+
+// Public routes for testing getalluser
+Route::get('/getAllUsers', function () {
+    $users = \App\Models\User::all();
+    return response()->json($users);
+})->withoutMiddleware('auth:sanctum');
+
+// Piblic routes for testing role dokter
+Route::get('/getDokters?role=dokter', function () {
+    $dokters = \App\Models\User::where('role', 'dokter')->get();
+    return response()->json($dokters);
+})->withoutMiddleware('auth:sanctum');
+
+Route::get('/getDokters', function () {
+    $dokters = \App\Models\User::where('role', 'dokter')->get();
+    return response()->json($dokters);
+})->withoutMiddleware('auth:sanctum');
