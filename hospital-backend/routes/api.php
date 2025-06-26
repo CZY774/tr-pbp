@@ -2,11 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PasienController;
-use App\Http\Controllers\Api\KunjunganController;
 use App\Http\Controllers\Api\ObatController;
 use App\Http\Controllers\Api\ResepController;
+use App\Http\Controllers\Api\PasienController;
+use App\Http\Controllers\Api\KunjunganController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -56,12 +57,20 @@ Route::get('/getAllUsers', function () {
 })->withoutMiddleware('auth:sanctum');
 
 // Piblic routes for testing role dokter
-Route::get('/getDokters?role=dokter', function () {
-    $dokters = \App\Models\User::where('role', 'dokter')->get();
-    return response()->json($dokters);
-})->withoutMiddleware('auth:sanctum');
+// Route::get('/getDokters?role=dokter', function () {
+//     $dokters = \App\Models\User::where('role', 'dokter')->get();
+//     return response()->json($dokters);
+// })->withoutMiddleware('auth:sanctum');
 
 Route::get('/getDokters', function () {
     $dokters = \App\Models\User::where('role', 'dokter')->get();
     return response()->json($dokters);
 })->withoutMiddleware('auth:sanctum');
+
+// Public route to get all users with role = dokter
+Route::get('/dokters', function () {
+    $dokters = \App\Models\User::where('role', 'dokter')
+        ->where('is_active', true)
+        ->get(['id', 'nama_lengkap', 'role']); // ambil kolom aman
+    return response()->json($dokters);
+});
