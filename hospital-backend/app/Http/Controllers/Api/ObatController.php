@@ -21,7 +21,7 @@ class ObatController extends Controller
         $validator = Validator::make($request->all(), [
             'kode_obat' => 'required|string|max:20|unique:obats,kode_obat',
             'nama_obat' => 'required|string|max:100',
-            'jenis_obat' => 'nullable|string|max:50',
+            'jenis_obat' => 'required|string|max:50',
             'satuan' => 'nullable|string|max:20',
             'harga_satuan' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
@@ -67,6 +67,7 @@ class ObatController extends Controller
     {
         $obat = Obat::findOrFail($id);
         $obat->update(['is_active' => false]);
+        $obat->delete();
         return response()->json(['message' => 'Obat deactivated successfully']);
     }
 }
