@@ -43,7 +43,7 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
 
   return (
     <aside className="w-64 bg-white shadow-md">
-      <nav className="p-4">
+      <nav className="p-4 space-y-2">
         {menuItems
           .filter((item) => item.roles.includes(userRole))
           .map((item) => {

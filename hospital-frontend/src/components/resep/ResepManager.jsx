@@ -12,6 +12,7 @@ const ResepManager = ({ token }) => {
   const [dokters, setDokters] = useState([]);
   const [apotekers, setApotekers] = useState([]);
   const [obats, setObats] = useState([]);
+  const [userRole, setUserRole] = useState(""); // Tambahan
 
   useEffect(() => {
     fetchReseps();
@@ -19,6 +20,9 @@ const ResepManager = ({ token }) => {
     fetchDokters();
     fetchApotekers();
     fetchObats();
+
+    const role = localStorage.getItem("userRole"); // Ambil dari localStorage
+    setUserRole(role); // Simpan ke state
   }, []);
 
   const fetchReseps = async () => {
@@ -113,13 +117,15 @@ const ResepManager = ({ token }) => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Manajemen Resep</h2>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
-        >
-          <Plus size={20} />
-          <span>Tambah Resep</span>
-        </button>
+        {userRole !== "apoteker" && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
+          >
+            <Plus size={20} />
+            <span>Tambah Resep</span>
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md">
@@ -140,24 +146,12 @@ const ResepManager = ({ token }) => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Pasien
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Dokter
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Obat
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Jumlah
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Aksi
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Pasien</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Dokter</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Obat</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Jumlah</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -166,9 +160,7 @@ const ResepManager = ({ token }) => {
                   <td className="px-4 py-3 text-sm font-medium">
                     {resep.kunjungan?.pasien?.nama_pasien}
                   </td>
-                  <td className="px-4 py-3 text-sm">
-                    {resep.dokter?.nama_lengkap}
-                  </td>
+                  <td className="px-4 py-3 text-sm">{resep.dokter?.nama_lengkap}</td>
                   <td className="px-4 py-3 text-sm">{resep.obat?.nama_obat}</td>
                   <td className="px-4 py-3 text-sm">
                     {resep.jumlah_obat} {resep.obat?.satuan}

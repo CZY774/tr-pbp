@@ -10,8 +10,23 @@ const PasienForm = ({ pasien, onSubmit, onCancel }) => {
     no_telepon: pasien?.no_telepon || "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+
+    if (!/^\d{16}$/.test(formData.nik)) {
+      newErrors.nik = "NIK harus terdiri dari 16 digit angka";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     onSubmit(formData);
   };
 
@@ -42,13 +57,19 @@ const PasienForm = ({ pasien, onSubmit, onCancel }) => {
             <label className="block text-sm font-medium mb-2">NIK</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none ${
+                errors.nik ? "border-red-500" : "focus:border-blue-500"
+              }`}
               value={formData.nik}
               onChange={(e) =>
                 setFormData({ ...formData, nik: e.target.value })
               }
               maxLength="16"
+              required
             />
+            {errors.nik && (
+              <p className="text-red-500 text-sm mt-1">{errors.nik}</p>
+            )}
           </div>
 
           <div className="mb-4">

@@ -40,6 +40,7 @@ const HospitalApp = () => {
 
       if (response.ok) {
         localStorage.setItem("token", data.access_token);
+        localStorage.setItem("userRole", data.user.role); // contoh: "admin", "dokter", "apoteker"
         setToken(data.access_token);
         setUser(data.user);
       } else {
@@ -65,14 +66,20 @@ const HospitalApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <Header user={user} onLogout={handleLogout} />
-      <div className="flex">
+      
+      {/* Main Layout Container */}
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
         <Sidebar 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
           userRole={user?.role} 
         />
-        <main className="flex-1 p-6">
+        
+        {/* Main Content Area */}
+        <main className="flex-1 ml-5 p-6 bg-gray-50">
           {activeTab === "dashboard" && <Dashboard token={token} />}
           {activeTab === "pasiens" && <PasienManager token={token} />}
           {activeTab === "kunjungans" && <KunjunganManager token={token} />}
