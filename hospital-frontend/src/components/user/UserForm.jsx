@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const UserForm = ({ user, onSubmit, onCancel }) => {
+const UserForm = ({ user, onSubmit, onCancel, authUserId }) => {
   const [formData, setFormData] = useState({
     username: user?.username || "",
     email: user?.email || "",
@@ -10,9 +10,26 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
     is_active: user?.is_active ?? true,
   });
 
+  const isEditMode = !!user;
+  const isSuperAdmin = user?.id === 1;
+  const isNotSelfSuperAdmin = isSuperAdmin && authUserId !== 1;
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (isNotSelfSuperAdmin) {
+      alert("Anda tidak memiliki izin untuk mengedit Super Admin.");
+      return;
+    }
+
+    // Saat edit, kirim hanya role & is_active
+    const dataToSubmit = isEditMode
+      ? {
+          role: formData.role,
+          is_active: formData.is_active,
+        }
+      : formData;
+
+    onSubmit(dataToSubmit);
   };
 
   return (
@@ -22,77 +39,91 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
           {user ? "Edit User" : "Tambah User"}
         </h3>
 
+        {isNotSelfSuperAdmin && (
+          <p className="text-red-500 text-sm mb-4">
+            ⚠️ Anda tidak memiliki izin untuk mengubah data Super Admin.
+          </p>
+        )}
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Username</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-              required
-            />
-          </div>
+          {!isEditMode && (
+            <>
+              {/* Username */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={formData.username}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              {user
-                ? "Password (Biarkan kosong jika tidak ingin mengubah)"
-                : "Password"}
-            </label>
-            <input
-              type="password"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required={!user}
-              minLength="6"
-            />
-          </div>
+              {/* Email */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Email</label>
+                <input
+                  type="email"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              required
-            />
-          </div>
+              {/* Password */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  required
+                  minLength={6}
+                />
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Nama Lengkap
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              value={formData.nama_lengkap}
-              onChange={(e) =>
-                setFormData({ ...formData, nama_lengkap: e.target.value })
-              }
-              required
-            />
-          </div>
+              {/* Nama Lengkap */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Nama Lengkap
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={formData.nama_lengkap}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nama_lengkap: e.target.value })
+                  }
+                  required
+                />
+              </div>
+            </>
+          )}
 
+          {/* Role */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Role</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-lg"
               value={formData.role}
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value })
               }
               required
+              disabled={isNotSelfSuperAdmin}
             >
               <option value="admin">Admin</option>
               <option value="dokter">Dokter</option>
@@ -100,11 +131,12 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
             </select>
           </div>
 
-          {user && (
+          {/* Status */}
+          {isEditMode && (
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
               <select
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 border rounded-lg"
                 value={formData.is_active}
                 onChange={(e) =>
                   setFormData({
@@ -112,6 +144,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
                     is_active: e.target.value === "true",
                   })
                 }
+                disabled={isNotSelfSuperAdmin}
               >
                 <option value={true}>Aktif</option>
                 <option value={false}>Nonaktif</option>
@@ -119,10 +152,11 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
             </div>
           )}
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 mt-6">
             <button
               type="submit"
               className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+              disabled={isNotSelfSuperAdmin}
             >
               {user ? "Update" : "Simpan"}
             </button>

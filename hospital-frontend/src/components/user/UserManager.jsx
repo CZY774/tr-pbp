@@ -43,7 +43,7 @@ const UserManager = ({ token }) => {
   };
 
   const handleDelete = async (id) => {
-    if (confirm("Yakin ingin menonaktifkan user ini?")) {
+    if (confirm("Yakin ingin menghapus user ini?")) {
       try {
         await api.delete(`/users/${id}`, token);
         fetchUsers();
