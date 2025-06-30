@@ -138,6 +138,15 @@ const ResepManager = ({ token }) => {
             <span>Tambah Resep</span>
           </button>
         )}
+        {userRole !== "apoteker" && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
+          >
+            <Plus size={20} />
+            <span>Tambah Resep</span>
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md">
@@ -158,24 +167,12 @@ const ResepManager = ({ token }) => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Pasien
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Dokter
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Obat
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Jumlah
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                  Aksi
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Pasien</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Dokter</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Obat</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Jumlah</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -184,9 +181,7 @@ const ResepManager = ({ token }) => {
                   <td className="px-4 py-3 text-sm font-medium">
                     {resep.kunjungan?.pasien?.nama_pasien}
                   </td>
-                  <td className="px-4 py-3 text-sm">
-                    {resep.dokter?.nama_lengkap}
-                  </td>
+                  <td className="px-4 py-3 text-sm">{resep.dokter?.nama_lengkap}</td>
                   <td className="px-4 py-3 text-sm">{resep.obat?.nama_obat}</td>
                   <td className="px-4 py-3 text-sm">
                     {resep.jumlah_obat} {resep.obat?.satuan}
@@ -249,3 +244,4 @@ const ResepManager = ({ token }) => {
 };
 
 export default ResepManager;
+

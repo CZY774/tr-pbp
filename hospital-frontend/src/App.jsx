@@ -42,6 +42,7 @@ const HospitalApp = () => {
       if (response.ok) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("userRole", data.user.role); // contoh: "admin", "dokter", "apoteker"
+        localStorage.setItem("userRole", data.user.role); // contoh: "admin", "dokter", "apoteker"
         setToken(data.access_token);
         setUser(data.user);
       } else {
@@ -67,6 +68,7 @@ const HospitalApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <Header user={user} onLogout={handleLogout} />
       <div className="flex min-h-screen">
         <Sidebar 

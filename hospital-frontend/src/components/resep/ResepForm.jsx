@@ -26,6 +26,10 @@ const ResepForm = ({
   const userRole = localStorage.getItem("userRole");
   const isReadOnly = userRole === "apoteker";
 
+  // Ambil role dari localStorage
+  const userRole = localStorage.getItem("userRole");
+  const isReadOnly = userRole === "apoteker";
+
   useEffect(() => {
     if (formData.obat_id) {
       const obat = obats.find((o) => o.id == formData.obat_id);
@@ -38,6 +42,7 @@ const ResepForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isReadOnly) onSubmit(formData);
+    if (!isReadOnly) onSubmit(formData);
   };
 
   return (
@@ -48,6 +53,7 @@ const ResepForm = ({
         </h3>
 
         <form onSubmit={handleSubmit}>
+          {/* Kunjungan */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Kunjungan</label>
             <select
@@ -56,6 +62,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, kunjungan_id: e.target.value })
               }
+              disabled={isReadOnly}
               disabled={isReadOnly}
               required
             >
@@ -69,6 +76,7 @@ const ResepForm = ({
             </select>
           </div>
 
+          {/* Dokter */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Dokter</label>
             <select
@@ -77,6 +85,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dokter_id: e.target.value })
               }
+              disabled={isReadOnly}
               disabled={isReadOnly}
               required
             >
@@ -118,6 +127,7 @@ const ResepForm = ({
                 setFormData({ ...formData, obat_id: e.target.value })
               }
               disabled={isReadOnly}
+              disabled={isReadOnly}
               required
             >
               <option value="">Pilih Obat</option>
@@ -137,6 +147,7 @@ const ResepForm = ({
             )}
           </div>
 
+          {/* Jumlah Obat */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">
               Jumlah Obat
@@ -148,6 +159,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, jumlah_obat: e.target.value })
               }
+              disabled={isReadOnly}
               disabled={isReadOnly}
               required
               min="1"
@@ -166,6 +178,7 @@ const ResepForm = ({
               )}
           </div>
 
+          {/* Dosis */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Dosis</label>
             <input
@@ -177,10 +190,12 @@ const ResepForm = ({
                 setFormData({ ...formData, dosis: e.target.value })
               }
               disabled={isReadOnly}
+              disabled={isReadOnly}
               maxLength="100"
             />
           </div>
 
+          {/* Aturan Pakai */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">
               Aturan Pakai
@@ -213,6 +228,7 @@ const ResepForm = ({
             />
           </div>
 
+          {/* Status dan Apoteker (jika resep sudah ada) */}
           {resep && (
             <>
               <div className="mb-4">
@@ -223,8 +239,12 @@ const ResepForm = ({
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                   value={formData.status_resep}
                   onChange={(e) =>
-                    setFormData({ ...formData, status_resep: e.target.value })
+                    setFormData({
+                      ...formData,
+                      status_resep: e.target.value,
+                    })
                   }
+                  disabled={isReadOnly}
                   disabled={isReadOnly}
                 >
                   <option value="menunggu">Menunggu</option>
@@ -235,7 +255,16 @@ const ResepForm = ({
             </>
           )}
 
+          {/* Tombol */}
           <div className="flex space-x-4">
+            {!isReadOnly && (
+              <button
+                type="submit"
+                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+              >
+                {resep ? "Update" : "Simpan"}
+              </button>
+            )}
             {!isReadOnly && (
               <button
                 type="submit"
@@ -259,3 +288,4 @@ const ResepForm = ({
 };
 
 export default ResepForm;
+

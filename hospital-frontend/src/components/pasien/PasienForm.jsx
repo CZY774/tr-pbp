@@ -58,13 +58,20 @@ const PasienForm = ({ pasien, onSubmit, onCancel }) => {
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none ${
                 errors.nik ? "border-red-500" : "focus:border-blue-500"
               }`}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none ${
+                errors.nik ? "border-red-500" : "focus:border-blue-500"
+              }`}
               value={formData.nik}
               onChange={(e) =>
                 setFormData({ ...formData, nik: e.target.value })
               }
               maxLength="16"
               required
+              required
             />
+            {errors.nik && (
+              <p className="text-red-500 text-sm mt-1">{errors.nik}</p>
+            )}
             {errors.nik && (
               <p className="text-red-500 text-sm mt-1">{errors.nik}</p>
             )}
