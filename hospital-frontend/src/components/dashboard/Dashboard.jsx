@@ -4,20 +4,32 @@ import api from "../../api/api";
 
 const Dashboard = ({ token }) => {
   const [stats, setStats] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        setLoading(true);
         const response = await api.get("/dashboard/stats", token);
         const data = await response.json();
         setStats(data);
       } catch (error) {
         console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchStats();
   }, [token]);
+
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

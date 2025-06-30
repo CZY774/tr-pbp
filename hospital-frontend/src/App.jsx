@@ -8,6 +8,7 @@ import KunjunganManager from "./components/kunjungan/KunjunganManager";
 import ObatManager from "./components/obat/ObatManager";
 import ResepManager from "./components/resep/ResepManager";
 import UserManager from "./components/user/UserManager";
+import RiwayatManager from "./components/riwayat/RiwayatManager";
 import api from "./api/api";
 
 const HospitalApp = () => {
@@ -40,6 +41,7 @@ const HospitalApp = () => {
 
       if (response.ok) {
         localStorage.setItem("token", data.access_token);
+        localStorage.setItem("userRole", data.user.role); // contoh: "admin", "dokter", "apoteker"
         setToken(data.access_token);
         setUser(data.user);
       } else {
@@ -66,13 +68,13 @@ const HospitalApp = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={user} onLogout={handleLogout} />
-      <div className="flex">
+      <div className="flex min-h-screen">
         <Sidebar 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
           userRole={user?.role} 
         />
-        <main className="flex-1 p-6">
+        <main className="flex-1 ml-5 p-6 bg-gray-50">
           {activeTab === "dashboard" && <Dashboard token={token} />}
           {activeTab === "pasiens" && <PasienManager token={token} />}
           {activeTab === "kunjungans" && <KunjunganManager token={token} />}
@@ -81,6 +83,7 @@ const HospitalApp = () => {
           {activeTab === "users" && user?.role === "admin" && (
             <UserManager token={token} />
           )}
+          {activeTab === "riwayats" && <RiwayatManager token={token} />}
         </main>
       </div>
     </div>

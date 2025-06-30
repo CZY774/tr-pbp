@@ -29,6 +29,7 @@ const ObatForm = ({ obat, onSubmit, onCancel }) => {
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              placeholder="Contoh: OBT001"
               value={formData.kode_obat}
               onChange={(e) =>
                 setFormData({ ...formData, kode_obat: e.target.value })
@@ -57,6 +58,7 @@ const ObatForm = ({ obat, onSubmit, onCancel }) => {
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              placeholder="Contoh: Kapsul, Tablet, Sirup, Pil, Puyer, dll."
               value={formData.jenis_obat}
               onChange={(e) =>
                 setFormData({ ...formData, jenis_obat: e.target.value })
@@ -70,6 +72,7 @@ const ObatForm = ({ obat, onSubmit, onCancel }) => {
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              placeholder="Contoh: Strip, Bungkus, Botol, dll."
               value={formData.satuan}
               onChange={(e) =>
                 setFormData({ ...formData, satuan: e.target.value })

@@ -79,5 +79,11 @@ Route::get('/test', function () {
 //     return response()->json($dokters);
 // })->withoutMiddleware('auth:sanctum');
 
-// Public Routes for immidate logout
-Route::post('/logout', [AuthController::class, 'logout']);
+/* Public routes yang berisikan riwayat pasien yang status_kunjungan = selesai.
+ * Menampilkan nama pasien, tanggal kunjungan, keluhan pasien, nama dokter yang memeriksa, resep dan obat yang diberikan.
+ * Ambil dari beberapa model yang berbeda sekaligus lalu direturn jadi json
+ */
+Route::get('/riwayat', function () {
+    $riwayat = \App\Models\Kunjungan::with(['pasien', 'dokter', 'reseps.obat'])->where('status_kunjungan', 'selesai')->get();
+    return response()->json($riwayat);
+})->withoutMiddleware('auth:sanctum');

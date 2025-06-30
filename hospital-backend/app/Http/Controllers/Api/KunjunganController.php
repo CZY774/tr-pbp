@@ -21,54 +21,6 @@ class KunjunganController extends Controller
         return response()->json($kunjungans);
     }
 
-    // public function store(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'pasien_id' => 'required|exists:pasiens,id',
-    //         'dokter_id' => 'required|exists:users,id',
-    //         'tanggal_kunjungan' => 'required|date',
-    //         'jam_kunjungan' => 'required',
-    //         'keluhan' => 'nullable|string',
-    //         'biaya_konsultasi' => 'nullable|numeric|min:0',
-    //         'status_kunjungan' => 'nullable|string|in:menunggu,selesai,batal',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-
-    //     // Pastikan user adalah dokter
-    //     $dokter = User::find($request->dokter_id);
-    //     if (!$dokter || $dokter->role !== 'dokter') {
-    //         return response()->json(['error' => 'User is not a doctor'], 422);
-    //     }
-
-    //     // // Generate nomor antrian otomatis
-    //     // $today = Carbon::today()->format('Ymd'); // contoh: 20250626
-    //     // $countToday = Kunjungan::whereDate('created_at', Carbon::today())->count() + 1;
-    //     // $no_antrian = $today . str_pad($countToday, 3, '0', STR_PAD_LEFT); // hasil: 20250626001
-
-    //     $tanggal = Carbon::parse($request->tanggal_kunjungan);
-    //     $tanggalStr = $tanggal->format('Ymd');
-
-    //     $countOnDate = Kunjungan::whereDate('tanggal_kunjungan', $tanggal)->count() + 1;
-    //     $no_antrian = $tanggalStr . str_pad($countOnDate, 3, '0', STR_PAD_LEFT);
-
-
-    //     // Gabungkan data
-    //     $data = $request->all();
-    //     $data['no_antrian'] = $no_antrian;
-    //     $data['status_kunjungan'] = $data['status_kunjungan'] ?? 'menunggu';
-
-    //     // Simpan kunjungan
-    //     $kunjungan = Kunjungan::create($data);
-    //     $kunjungan->load(['pasien', 'dokter']);
-
-    //     return response()->json($kunjungan, 201);
-    // }
-
-    
-
     public function store(Request $request)
         {
             $validator = Validator::make($request->all(), [
@@ -77,6 +29,8 @@ class KunjunganController extends Controller
                 'tanggal_kunjungan' => 'required|date',
                 'jam_kunjungan' => 'required',
                 'keluhan' => 'nullable|string',
+                'diagnosis' => 'nullable|string',
+                'tindakan' => 'nullable|string',
                 'biaya_konsultasi' => 'nullable|numeric|min:0',
                 'status_kunjungan' => 'nullable|string|in:menunggu,selesai,batal',
             ]);

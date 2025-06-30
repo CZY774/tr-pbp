@@ -8,14 +8,18 @@ const PasienManager = ({ token }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingPasien, setEditingPasien] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchPasiens = async () => {
     try {
+      setLoading(true);
       const response = await api.get("/pasiens", token);
       const data = await response.json();
       setPasiens(data);
     } catch (error) {
       console.error("Error fetching pasiens:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,6 +58,14 @@ const PasienManager = ({ token }) => {
       pasien.nama_pasien.toLowerCase().includes(searchTerm.toLowerCase()) ||
       pasien.no_rm.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -12,6 +12,8 @@ const ResepManager = ({ token }) => {
   const [dokters, setDokters] = useState([]);
   const [apotekers, setApotekers] = useState([]);
   const [obats, setObats] = useState([]);
+  const [userRole, setUserRole] = useState(""); // Tambahan
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchReseps();
@@ -19,15 +21,21 @@ const ResepManager = ({ token }) => {
     fetchDokters();
     fetchApotekers();
     fetchObats();
+
+    const role = localStorage.getItem("userRole"); // Ambil role dari localStorage
+    setUserRole(role); // Simpan role ke state
   }, []);
 
   const fetchReseps = async () => {
     try {
+      setLoading(true);
       const response = await api.get("/reseps", token);
       const data = await response.json();
       setReseps(data);
     } catch (error) {
       console.error("Error fetching reseps:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,17 +117,27 @@ const ResepManager = ({ token }) => {
       resep.obat?.nama_obat.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Manajemen Resep</h2>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
-        >
-          <Plus size={20} />
-          <span>Tambah Resep</span>
-        </button>
+        {userRole !== "apoteker" && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
+          >
+            <Plus size={20} />
+            <span>Tambah Resep</span>
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md">

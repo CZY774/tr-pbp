@@ -8,6 +8,7 @@ const ObatManager = ({ token }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingObat, setEditingObat] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchObats();
@@ -15,11 +16,14 @@ const ObatManager = ({ token }) => {
 
   const fetchObats = async () => {
     try {
+      setLoading(true);
       const response = await api.get("/obats", token);
       const data = await response.json();
       setObats(data);
     } catch (error) {
       console.error("Error fetching obats:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,6 +58,14 @@ const ObatManager = ({ token }) => {
       obat.nama_obat.toLowerCase().includes(searchTerm.toLowerCase()) ||
       obat.kode_obat.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

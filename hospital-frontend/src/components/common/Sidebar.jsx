@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Calendar, Pill, FileText } from "lucide-react";
+import { Users, Calendar, Pill, FileText, History } from "lucide-react";
 
 const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
   const menuItems = [
@@ -39,11 +39,17 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
       icon: Users, 
       roles: ["admin"] 
     },
+    { 
+      id: "riwayats", 
+      label: "Riwayat", 
+      icon: History, 
+      roles: ["admin"] 
+    },
   ];
 
   return (
     <aside className="w-64 bg-white shadow-md">
-      <nav className="p-4">
+      <nav className="p-4 space-y-2">
         {menuItems
           .filter((item) => item.roles.includes(userRole))
           .map((item) => {

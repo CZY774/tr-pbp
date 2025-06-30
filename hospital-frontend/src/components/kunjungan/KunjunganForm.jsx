@@ -8,6 +8,8 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
       kunjungan?.tanggal_kunjungan || new Date().toISOString().split("T")[0],
     jam_kunjungan: kunjungan?.jam_kunjungan || "08:00",
     keluhan: kunjungan?.keluhan || "",
+    diagnosis: kunjungan?.diagnosis || "",
+    tindakan: kunjungan?.tindakan || "",
     biaya_konsultasi: kunjungan?.biaya_konsultasi || 0,
     status_kunjungan: kunjungan?.status_kunjungan || "menunggu",
   });
@@ -97,10 +99,37 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
             <label className="block text-sm font-medium mb-2">Keluhan</label>
             <textarea
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              placeholder="Contoh: Demam, batuk, pilek, dll"
               rows="3"
               value={formData.keluhan}
               onChange={(e) =>
                 setFormData({ ...formData, keluhan: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Diagnosis</label>
+            <textarea
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              placeholder="Contoh: Tipes, flu, dll"
+              rows="3"
+              value={formData.diagnosis}
+              onChange={(e) =>
+                setFormData({ ...formData, diagnosis: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Tindakan</label>
+            <textarea
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              placeholder="Contoh: Obat, pemeriksaan, dll"
+              rows="3"
+              value={formData.tindakan}
+              onChange={(e) =>
+                setFormData({ ...formData, tindakan: e.target.value })
               }
             />
           </div>

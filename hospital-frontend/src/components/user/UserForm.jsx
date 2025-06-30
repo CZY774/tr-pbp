@@ -4,6 +4,7 @@ const UserForm = ({ user, onSubmit, onCancel, authUserId }) => {
   const [formData, setFormData] = useState({
     username: user?.username || "",
     email: user?.email || "",
+    no_telepon: user?.no_telepon || "",
     password: "",
     nama_lengkap: user?.nama_lengkap || "",
     role: user?.role || "dokter",
@@ -73,6 +74,22 @@ const UserForm = ({ user, onSubmit, onCancel, authUserId }) => {
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              {/* Nomor Telepon */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Nomor Telepon
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded-lg"
+                  value={formData.no_telepon}
+                  onChange={(e) =>
+                    setFormData({ ...formData, no_telepon: e.target.value })
                   }
                   required
                 />

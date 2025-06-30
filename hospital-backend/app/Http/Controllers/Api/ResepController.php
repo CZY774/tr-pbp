@@ -24,10 +24,15 @@ class ResepController extends Controller
         $validator = Validator::make($request->all(), [
             'kunjungan_id' => 'required|exists:kunjungans,id',
             'dokter_id' => 'required|exists:users,id',
+            'apoteker_id' => 'nullable|exists:users,id',
             'obat_id' => 'required|exists:obats,id',
             'jumlah_obat' => 'required|integer|min:1',
             'dosis' => 'nullable|string|max:100',
             'aturan_pakai' => 'nullable|string',
+            'harga_obat' => 'nullable|numeric|min:0',
+            'total_harga' => 'nullable|numeric|min:0',
+            'tanggal_resep' => 'nullable|date',
+            'status_resep' => 'nullable|in:menunggu,diproses,selesai',
         ]);
 
         if ($validator->fails()) {

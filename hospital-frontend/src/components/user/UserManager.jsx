@@ -15,8 +15,8 @@ const UserManager = ({ token }) => {
   }, []);
 
   const fetchUsers = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const response = await api.get("/users", token);
       const data = await response.json();
       setUsers(data);
@@ -58,6 +58,14 @@ const UserManager = ({ token }) => {
       user.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

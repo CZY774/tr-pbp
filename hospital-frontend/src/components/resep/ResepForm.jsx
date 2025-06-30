@@ -22,6 +22,10 @@ const ResepForm = ({
 
   const [selectedObat, setSelectedObat] = useState(null);
 
+  // Ambil role dari localStorage
+  const userRole = localStorage.getItem("userRole");
+  const isReadOnly = userRole === "apoteker";
+
   useEffect(() => {
     if (formData.obat_id) {
       const obat = obats.find((o) => o.id == formData.obat_id);
@@ -33,7 +37,7 @@ const ResepForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (!isReadOnly) onSubmit(formData);
   };
 
   return (
@@ -52,6 +56,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, kunjungan_id: e.target.value })
               }
+              disabled={isReadOnly}
               required
             >
               <option value="">Pilih Kunjungan</option>
@@ -72,12 +77,33 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dokter_id: e.target.value })
               }
+              disabled={isReadOnly}
               required
             >
               <option value="">Pilih Dokter</option>
               {dokters.map((dokter) => (
                 <option key={dokter.id} value={dokter.id}>
                   {dokter.nama_lengkap}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Apoteker</label>
+            <select
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={formData.apoteker_id}
+              onChange={(e) =>
+                setFormData({ ...formData, apoteker_id: e.target.value })
+              }
+              disabled={isReadOnly}
+              required
+            >
+              <option value="">Pilih Apoteker</option>
+              {apotekers.map((apoteker) => (
+                <option key={apoteker.id} value={apoteker.id}>
+                  {apoteker.nama_lengkap}
                 </option>
               ))}
             </select>
@@ -91,6 +117,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, obat_id: e.target.value })
               }
+              disabled={isReadOnly}
               required
             >
               <option value="">Pilih Obat</option>
@@ -121,10 +148,22 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, jumlah_obat: e.target.value })
               }
+              disabled={isReadOnly}
               required
               min="1"
               max={selectedObat?.stok || 1000}
-            />
+              />
+              {/* Mirip seperti di Pilih Obat, menampilkan total harga sesuai jumlah obat */}
+              {selectedObat && (
+                <div className="mt-2 text-sm text-gray-600">
+                  <p>
+                    Total Harga: Rp{" "}
+                    {(
+                      formData.jumlah_obat * selectedObat.harga_satuan
+                    ).toLocaleString()}
+                  </p>
+                </div>
+              )}
           </div>
 
           <div className="mb-4">
@@ -137,6 +176,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dosis: e.target.value })
               }
+              disabled={isReadOnly}
               maxLength="100"
             />
           </div>
@@ -153,6 +193,23 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, aturan_pakai: e.target.value })
               }
+              disabled={isReadOnly}
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">
+              Tanggal Resep
+            </label>
+            <input
+              type="date"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              value={formData.tanggal_resep}
+              onChange={(e) =>
+                setFormData({ ...formData, tanggal_resep: e.target.value })
+              }
+              disabled={isReadOnly}
+              required
             />
           </div>
 
@@ -168,44 +225,25 @@ const ResepForm = ({
                   onChange={(e) =>
                     setFormData({ ...formData, status_resep: e.target.value })
                   }
+                  disabled={isReadOnly}
                 >
                   <option value="menunggu">Menunggu</option>
                   <option value="diproses">Diproses</option>
                   <option value="selesai">Selesai</option>
                 </select>
               </div>
-
-              {formData.status_resep !== "menunggu" && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">
-                    Apoteker
-                  </label>
-                  <select
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                    value={formData.apoteker_id}
-                    onChange={(e) =>
-                      setFormData({ ...formData, apoteker_id: e.target.value })
-                    }
-                  >
-                    <option value="">Pilih Apoteker</option>
-                    {apotekers.map((apoteker) => (
-                      <option key={apoteker.id} value={apoteker.id}>
-                        {apoteker.nama_lengkap}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </>
           )}
 
           <div className="flex space-x-4">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-            >
-              {resep ? "Update" : "Simpan"}
-            </button>
+            {!isReadOnly && (
+              <button
+                type="submit"
+                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+              >
+                {resep ? "Update" : "Simpan"}
+              </button>
+            )}
             <button
               type="button"
               onClick={onCancel}
