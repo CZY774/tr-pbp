@@ -1,15 +1,21 @@
 import React, { useState } from "react";
+import ForgotPasswordForm from "./ForgotPasswordForm";
 
 const LoginForm = ({ onLogin, loading }) => {
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
+  const [showForgot, setShowForgot] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onLogin(credentials);
   };
+
+  if (showForgot) {
+    return <ForgotPasswordForm onBack={() => setShowForgot(false)} />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
@@ -59,6 +65,15 @@ const LoginForm = ({ onLogin, loading }) => {
           <p>admin / password</p>
           <p>dr_budi / password</p>
           <p>apt_sari / password</p>
+        </div>
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            className="text-blue-500 hover:underline text-sm"
+            onClick={() => setShowForgot(true)}
+          >
+            Lupa Password?
+          </button>
         </div>
       </div>
     </div>

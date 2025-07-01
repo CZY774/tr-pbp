@@ -45,6 +45,13 @@ const authApi = {
       },
       body: JSON.stringify(data),
     }),
+
+  forgotPassword: (data) =>
+    fetch(`${API_AUTH_BASE}/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }),
 };
 
 export default authApi;

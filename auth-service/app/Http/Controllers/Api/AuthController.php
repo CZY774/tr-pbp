@@ -144,4 +144,46 @@ class AuthController extends Controller
             'message' => 'Password changed successfully'
         ]);
     }
+
+    /**
+     * Forgot password: validate username & email, then set new password
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'email' => 'required|email',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = User::where('username', $request->username)
+            ->where('email', $request->email)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Invalid username or email',
+                'errors' => [
+                    'username' => ['Invalid username or email'],
+                    'email' => ['Invalid username or email']
+                ]
+            ], 404);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'message' => 'Password updated successfully'
+        ]);
+    }
 }

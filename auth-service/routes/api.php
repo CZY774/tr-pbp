@@ -14,3 +14,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::put('/profile/change-password', [AuthController::class, 'changePassword']);
 });
+
+// Forgot Password route
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
