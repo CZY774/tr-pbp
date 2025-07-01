@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
-import api from "../../api/api";
+import apiUser from "../../api/userApi"; // ← pakai apiUser, bukan generic `api`
 import UserForm from "./UserForm";
 
 const UserManager = ({ token }) => {
@@ -17,7 +17,7 @@ const UserManager = ({ token }) => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/users", token);
+      const response = await apiUser.getUsers(token);
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -30,9 +30,9 @@ const UserManager = ({ token }) => {
   const handleSubmit = async (formData) => {
     try {
       if (editingUser) {
-        await api.put(`/users/${editingUser.id}`, formData, token);
+        await apiUser.updateUser(editingUser.id, formData, token);
       } else {
-        await api.post("/users", formData, token);
+        await apiUser.createUser(formData, token);
       }
       fetchUsers();
       setShowForm(false);
@@ -45,10 +45,10 @@ const UserManager = ({ token }) => {
   const handleDelete = async (id) => {
     if (confirm("Yakin ingin menghapus user ini?")) {
       try {
-        await api.delete(`/users/${id}`, token);
+        await apiUser.deleteUser(id, token);
         fetchUsers();
       } catch (error) {
-        console.error("Error deactivating user:", error);
+        console.error("Error deleting user:", error);
       }
     }
   };
@@ -59,7 +59,7 @@ const UserManager = ({ token }) => {
       user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-   if (loading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
