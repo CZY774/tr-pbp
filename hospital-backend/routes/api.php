@@ -13,16 +13,16 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// Auth routes
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+// // Auth routes
+// Route::post('/login', [AuthController::class, 'login']);
+// Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-// Profile routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [AuthController::class, 'profile']);
-    Route::put('/profile', [AuthController::class, 'updateProfile']);
-    Route::put('/profile/change-password', [AuthController::class, 'changePassword']);
-});
+// // Profile routes
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::get('/profile', [AuthController::class, 'profile']);
+//     Route::put('/profile', [AuthController::class, 'updateProfile']);
+//     Route::put('/profile/change-password', [AuthController::class, 'changePassword']);
+// });
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

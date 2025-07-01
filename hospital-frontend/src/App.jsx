@@ -11,6 +11,7 @@ import UserManager from "./components/user/UserManager";
 import RiwayatManager from "./components/riwayat/RiwayatManager";
 import EditProfile from "./components/user/EditProfile";
 import api from "./api/api";
+import authApi from "./api/authApi";
 
 const HospitalApp = () => {
   const [user, setUser] = useState(null);
@@ -38,7 +39,7 @@ const HospitalApp = () => {
   const login = async (credentials) => {
     setLoading(true);
     try {
-      const response = await api.login(credentials);
+      const response = await authApi.login(credentials);
       const data = await response.json();
 
       if (response.ok) {
@@ -60,7 +61,7 @@ const HospitalApp = () => {
     try {
       // Call logout API
       if (token) {
-        await api.post("/logout", {}, token);
+        await authApi.logout(token);
       }
     } catch (error) {
       console.error("Error during logout:", error);
