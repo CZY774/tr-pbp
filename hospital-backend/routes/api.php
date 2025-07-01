@@ -17,6 +17,13 @@ Route::get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+// Profile routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/profile/change-password', [AuthController::class, 'changePassword']);
+});
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Pasien routes
@@ -48,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dokters', function () {
         $dokters = \App\Models\User::where('role', 'dokter')
             ->where('is_active', true)
-            ->get(['id', 'nama_lengkap', 'role']); // ambil kolom aman
+            ->get(['id', 'nama_lengkap', 'role']);
         return response()->json($dokters);
     });
 
@@ -56,14 +63,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/apotekers', function () {
         $apotekers = \App\Models\User::where('role', 'apoteker')
             ->where('is_active', true)
-            ->get(['id', 'nama_lengkap', 'role']); // ambil kolom aman
+            ->get(['id', 'nama_lengkap', 'role']);
         return response()->json($apotekers);
     });
 
-    /* Public routes yang berisikan riwayat pasien yang status_kunjungan = selesai.
-    * Menampilkan nama pasien, tanggal kunjungan, keluhan pasien, nama dokter yang memeriksa, resep dan obat yang diberikan.
-    * Ambil dari beberapa model yang berbeda sekaligus lalu direturn jadi json
-    */
     Route::get('/riwayat', function () {
         $riwayat = \App\Models\Kunjungan::with(['pasien', 'dokter', 'reseps.obat'])->where('status_kunjungan', 'selesai')->get();
         return response()->json($riwayat);
@@ -74,16 +77,3 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working!']);
 });
-
-// // Public routes for testing getalluser
-// Route::get('/getAllUsers', function () {
-//     $users = \App\Models\User::all();
-//     return response()->json($users);
-// })->withoutMiddleware('auth:sanctum');
-
-// // Public routes for testing get all dokters attribute
-// Route::get('/getDokters', function () {
-//     $dokters = \App\Models\User::where('role', 'dokter')->get();
-//     return response()->json($dokters);
-// })->withoutMiddleware('auth:sanctum');
-
