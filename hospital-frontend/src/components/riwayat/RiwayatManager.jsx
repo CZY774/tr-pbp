@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Calendar, User, Stethoscope, Pill, FileText, Eye, X, Clock, DollarSign } from "lucide-react";
+import { Search, Calendar, FileText, Eye, X, Clock } from "lucide-react";
 import api from "../../api/api";
 
 const RiwayatManager = ({ token }) => {
@@ -184,13 +184,15 @@ const RiwayatManager = ({ token }) => {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <button
-                          onClick={() => handleShowDetail(item)}
-                          className="text-blue-600 hover:text-blue-800 flex items-center space-x-1"
-                        >
-                          <Eye size={16} />
-                          <span>Detail</span>
-                        </button>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleShowDetail(item)}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="Detail"
+                          >
+                            <Eye size={20} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

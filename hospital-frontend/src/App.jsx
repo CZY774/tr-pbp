@@ -42,7 +42,6 @@ const HospitalApp = () => {
       if (response.ok) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("userRole", data.user.role); // contoh: "admin", "dokter", "apoteker"
-        localStorage.setItem("userRole", data.user.role); // contoh: "admin", "dokter", "apoteker"
         setToken(data.access_token);
         setUser(data.user);
       } else {

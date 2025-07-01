@@ -24,11 +24,8 @@ const ResepForm = ({
 
   // Ambil role dari localStorage
   const userRole = localStorage.getItem("userRole");
-  const isReadOnly = userRole === "apoteker";
-
-  // Ambil role dari localStorage
-  const userRole = localStorage.getItem("userRole");
-  const isReadOnly = userRole === "apoteker";
+  const isApoteker = userRole === "apoteker";
+  const isDokter = userRole === "dokter";
 
   useEffect(() => {
     if (formData.obat_id) {
@@ -41,8 +38,7 @@ const ResepForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isReadOnly) onSubmit(formData);
-    if (!isReadOnly) onSubmit(formData);
+    if (!isApoteker) onSubmit(formData);
   };
 
   return (
@@ -62,8 +58,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, kunjungan_id: e.target.value })
               }
-              disabled={isReadOnly}
-              disabled={isReadOnly}
+              disabled={isApoteker}
               required
             >
               <option value="">Pilih Kunjungan</option>
@@ -85,8 +80,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dokter_id: e.target.value })
               }
-              disabled={isReadOnly}
-              disabled={isReadOnly}
+              disabled={isApoteker}
               required
             >
               <option value="">Pilih Dokter</option>
@@ -106,7 +100,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, apoteker_id: e.target.value })
               }
-              disabled={isReadOnly}
+              disabled={isApoteker}
               required
             >
               <option value="">Pilih Apoteker</option>
@@ -126,8 +120,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, obat_id: e.target.value })
               }
-              disabled={isReadOnly}
-              disabled={isReadOnly}
+              disabled={isApoteker}
               required
             >
               <option value="">Pilih Obat</option>
@@ -159,8 +152,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, jumlah_obat: e.target.value })
               }
-              disabled={isReadOnly}
-              disabled={isReadOnly}
+              disabled={isApoteker}
               required
               min="1"
               max={selectedObat?.stok || 1000}
@@ -189,8 +181,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, dosis: e.target.value })
               }
-              disabled={isReadOnly}
-              disabled={isReadOnly}
+              disabled={isApoteker}
               maxLength="100"
             />
           </div>
@@ -208,7 +199,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, aturan_pakai: e.target.value })
               }
-              disabled={isReadOnly}
+              disabled={isApoteker}
             />
           </div>
 
@@ -223,7 +214,7 @@ const ResepForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, tanggal_resep: e.target.value })
               }
-              disabled={isReadOnly}
+              disabled={isApoteker}
               required
             />
           </div>
@@ -244,8 +235,7 @@ const ResepForm = ({
                       status_resep: e.target.value,
                     })
                   }
-                  disabled={isReadOnly}
-                  disabled={isReadOnly}
+                  disabled={isDokter}
                 >
                   <option value="menunggu">Menunggu</option>
                   <option value="diproses">Diproses</option>
@@ -257,15 +247,7 @@ const ResepForm = ({
 
           {/* Tombol */}
           <div className="flex space-x-4">
-            {!isReadOnly && (
-              <button
-                type="submit"
-                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-              >
-                {resep ? "Update" : "Simpan"}
-              </button>
-            )}
-            {!isReadOnly && (
+            {!isApoteker && (
               <button
                 type="submit"
                 className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"

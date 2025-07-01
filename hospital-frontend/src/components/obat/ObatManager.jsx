@@ -156,12 +156,14 @@ const ObatManager = ({ token }) => {
                           setShowForm(true);
                         }}
                         className="text-blue-600 hover:text-blue-800"
+                        title="Edit"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDelete(obat.id)}
                         className="text-red-600 hover:text-red-800"
+                        title="Hapus"
                       >
                         <Trash2 size={16} />
                       </button>

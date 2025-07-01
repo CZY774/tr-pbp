@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, Edit, Trash2, FileText } from "lucide-react";
 import api from "../../api/api";
 import ResepForm from "./ResepForm";
 
@@ -14,6 +14,7 @@ const ResepManager = ({ token }) => {
   const [obats, setObats] = useState([]);
   const [userRole, setUserRole] = useState(""); // Tambahan
   const [loading, setLoading] = useState(true);
+  const isDokter = userRole === "dokter";
 
   useEffect(() => {
     fetchReseps();
@@ -106,6 +107,22 @@ const ResepManager = ({ token }) => {
     }
   };
 
+  const handleCompleteResep = async (id) => {
+    try {
+      await api.put(`/reseps/${id}`,
+        { status_resep: "selesai" },
+        token
+      );
+      setReseps(
+        reseps.map((resep) =>
+          resep.id === id ? { ...resep, status_resep: "selesai" } : resep
+        )
+      );
+    } catch (error) {
+      console.error("Error completing resep:", error);
+    }
+  };
+
   const filteredReseps = reseps.filter(
     (resep) =>
       resep.kunjungan?.pasien?.nama_pasien
@@ -129,15 +146,6 @@ const ResepManager = ({ token }) => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Manajemen Resep</h2>
-        {userRole !== "apoteker" && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
-          >
-            <Plus size={20} />
-            <span>Tambah Resep</span>
-          </button>
-        )}
         {userRole !== "apoteker" && (
           <button
             onClick={() => setShowForm(true)}
@@ -207,12 +215,23 @@ const ResepManager = ({ token }) => {
                           setShowForm(true);
                         }}
                         className="text-blue-600 hover:text-blue-800"
+                        title="Edit"
                       >
                         <Edit size={16} />
                       </button>
+                      {resep.status_resep === "menunggu" && !isDokter && (
+                        <button
+                          onClick={() => handleCompleteResep(resep.id)}
+                          className="text-green-600 hover:text-green-800"
+                          title="Selesaikan"
+                        >
+                          <FileText size={16} />
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDelete(resep.id)}
                         className="text-red-600 hover:text-red-800"
+                        title="Hapus"
                       >
                         <Trash2 size={16} />
                       </button>
