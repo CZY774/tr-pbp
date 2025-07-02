@@ -60,3 +60,5 @@ class User extends Authenticatable
         return $this->hasMany(Resep::class, 'apoteker_id');
     }
 }
+
+// hello world
