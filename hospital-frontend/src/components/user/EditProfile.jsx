@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../api/api"; // pastikan path sudah benar
+import authApi from "../../api/authApi"; // pastikan path sudah benar
 const EditProfile = ({ user, token, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
     nama_lengkap: "",
@@ -51,7 +51,7 @@ const EditProfile = ({ user, token, onClose, onUpdate }) => {
     setErrors({});
 
     try {
-      const response = await api.updateProfile(
+      const response = await authApi.updateProfile(
         {
           nama_lengkap: formData.nama_lengkap,
           username: formData.username,
@@ -92,7 +92,7 @@ const EditProfile = ({ user, token, onClose, onUpdate }) => {
     setErrors({});
 
     try {
-      const response = await api.changePassword(
+      const response = await authApi.changePassword(
         {
           current_password: formData.current_password,
           new_password: formData.new_password,
