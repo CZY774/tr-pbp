@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
 import PasienForm from "./PasienForm";
-import pasienApi from "../../api/pasienApi"; // ← ganti dari api ke pasienApi
+import api from "../../api/api";
 
 const PasienManager = ({ token }) => {
   const [pasiens, setPasiens] = useState([]);
@@ -13,7 +13,7 @@ const PasienManager = ({ token }) => {
   const fetchPasiens = async () => {
     try {
       setLoading(true);
-      const response = await pasienApi.getAll(token);
+      const response = await api.get("/pasiens", token);
       const data = await response.json();
       setPasiens(data);
     } catch (error) {
@@ -30,9 +30,9 @@ const PasienManager = ({ token }) => {
   const handleSubmit = async (formData) => {
     try {
       if (editingPasien) {
-        await pasienApi.update(editingPasien.id, formData, token);
+        await api.put(`/pasiens/${editingPasien.id}`, formData, token);
       } else {
-        await pasienApi.create(formData, token);
+        await api.post("/pasiens", formData, token);
       }
       fetchPasiens();
       setShowForm(false);
@@ -45,7 +45,7 @@ const PasienManager = ({ token }) => {
   const handleDelete = async (id) => {
     if (confirm("Yakin ingin menghapus pasien ini?")) {
       try {
-        await pasienApi.remove(id, token);
+        await api.delete(`/pasiens/${id}`, token);
         fetchPasiens();
       } catch (error) {
         console.error("Error deleting pasien:", error);

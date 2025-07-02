@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, FileText } from "lucide-react";
 import api from "../../api/api";
-import kunjunganApi from "../../api/kunjunganApi";
 import KunjunganForm from "./KunjunganForm";
 
 const KunjunganManager = ({ token }) => {
@@ -13,12 +12,14 @@ const KunjunganManager = ({ token }) => {
   const [dokters, setDokters] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Fetch all required data
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch all data in parallel
         setLoading(true);
         const [kunjungansRes, pasiensRes, doktersRes] = await Promise.all([
-          kunjunganApi.getAll(token),
+          api.get("/kunjungans", token),
           api.get("/pasiens", token),
           api.get("/dokters", token),
         ]);
@@ -39,12 +40,13 @@ const KunjunganManager = ({ token }) => {
   const handleSubmit = async (formData) => {
     try {
       if (editingKunjungan) {
-        await kunjunganApi.update(editingKunjungan.id, formData, token);
+        await api.put(`/kunjungans/${editingKunjungan.id}`, formData, token);
       } else {
-        await kunjunganApi.create(formData, token);
-        console.log("Data yang dikirim:", formData);
+        await api.post("/kunjungans", formData, token);
+        console.log("Data yang dikirim:", formData); // 🐞 Tambahkan log
       }
-      const res = await kunjunganApi.getAll(token);
+      // Refresh the data
+      const res = await api.get("/kunjungans", token);
       setKunjungans(await res.json());
       setShowForm(false);
       setEditingKunjungan(null);
@@ -57,7 +59,7 @@ const KunjunganManager = ({ token }) => {
   const handleDelete = async (id) => {
     if (confirm("Yakin ingin menghapus kunjungan ini?")) {
       try {
-        await kunjunganApi.remove(id, token);
+        await api.delete(`/kunjungans/${id}`, token);
         setKunjungans(kunjungans.filter((k) => k.id !== id));
       } catch (error) {
         console.error("Error deleting kunjungan:", error);
@@ -67,7 +69,11 @@ const KunjunganManager = ({ token }) => {
 
   const handleCompleteKunjungan = async (id) => {
     try {
-      await kunjunganApi.complete(id, token);
+      await api.put(
+        `/kunjungans/${id}`,
+        { status_kunjungan: "selesai" },
+        token
+      );
       setKunjungans(
         kunjungans.map((k) =>
           k.id === id ? { ...k, status_kunjungan: "selesai" } : k
@@ -89,7 +95,7 @@ const KunjunganManager = ({ token }) => {
       kunjungan.no_antrian?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
+   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -151,15 +157,22 @@ const KunjunganManager = ({ token }) => {
             <tbody>
               {filteredKunjungans.map((kunjungan) => (
                 <tr key={kunjungan.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm">{kunjungan.no_antrian}</td>
+                  <td className="px-4 py-3 text-sm">
+                    {kunjungan.no_antrian}
+                  </td>
                   <td className="px-4 py-3 text-sm font-medium">
-                    {kunjungan.pasien?.nama_pasien || "Pasien tidak ditemukan"}
+                    {kunjungan.pasien?.nama_pasien ||
+                      "Pasien tidak ditemukan"}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    {kunjungan.dokter?.nama_lengkap || "Dokter tidak ditemukan"}
+                    {kunjungan.dokter?.nama_lengkap ||
+                      "Dokter tidak ditemukan"}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    {new Date(kunjungan.tanggal_kunjungan).toLocaleDateString()} {kunjungan.jam_kunjungan}
+                    {new Date(
+                      kunjungan.tanggal_kunjungan
+                    ).toLocaleDateString()}{" "}
+                    {kunjungan.jam_kunjungan}
                   </td>
                   <td className="px-4 py-3 text-sm">
                     <span
@@ -188,7 +201,9 @@ const KunjunganManager = ({ token }) => {
                       </button>
                       {kunjungan.status_kunjungan === "menunggu" && (
                         <button
-                          onClick={() => handleCompleteKunjungan(kunjungan.id)}
+                          onClick={() =>
+                            handleCompleteKunjungan(kunjungan.id)
+                          }
                           className="text-green-600 hover:text-green-800"
                           title="Selesaikan"
                         >
