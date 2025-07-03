@@ -80,7 +80,7 @@ const PasienForm = ({ pasien, onSubmit, onCancel }) => {
             <input
               type="date"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              value={formData.tanggal_lahir}
+              value={formData.tanggal_lahir.slice(0, 10)} // ambil hanya YYYY-MM-DD
               onChange={(e) =>
                 setFormData({ ...formData, tanggal_lahir: e.target.value })
               }

@@ -4,7 +4,9 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     pasien_id: kunjungan?.pasien_id || "",
     dokter_id: kunjungan?.dokter_id || "",
-    tanggal_kunjungan: kunjungan?.tanggal_kunjungan || new Date().toISOString().split("T")[0],
+    tanggal_kunjungan: kunjungan?.tanggal_kunjungan
+    ? kunjungan.tanggal_kunjungan.slice(0, 10) // ambil hanya YYYY-MM-DD
+    : new Date().toISOString().split("T")[0],
     jam_kunjungan: kunjungan?.jam_kunjungan || "08:00",
     keluhan: kunjungan?.keluhan || "",
     diagnosis: kunjungan?.diagnosis || "",
