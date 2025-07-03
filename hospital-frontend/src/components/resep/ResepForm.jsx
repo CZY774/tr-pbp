@@ -18,6 +18,7 @@ const ResepForm = ({
     aturan_pakai: resep?.aturan_pakai || "",
     status_resep: resep?.status_resep || "menunggu",
     apoteker_id: resep?.apoteker_id || "",
+    tanggal_resep: resep?.tanggal_resep || new Date().toISOString().split("T")[0],
   });
 
   const [selectedObat, setSelectedObat] = useState(null);
@@ -34,7 +35,7 @@ const ResepForm = ({
     } else {
       setSelectedObat(null);
     }
-  }, [formData.obat_id]);
+  }, [formData.obat_id, obats]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,18 +43,17 @@ const ResepForm = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-96 max-h-screen overflow-y-auto">
-        <h3 className="text-lg font-bold mb-4">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
+        <h3 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
           {resep ? "Edit Resep" : "Tambah Resep"}
         </h3>
-
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
           {/* Kunjungan */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Kunjungan</label>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Kunjungan</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.kunjungan_id}
               onChange={(e) =>
                 setFormData({ ...formData, kunjungan_id: e.target.value })
@@ -72,10 +72,10 @@ const ResepForm = ({
           </div>
 
           {/* Dokter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Dokter</label>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Dokter</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.dokter_id}
               onChange={(e) =>
                 setFormData({ ...formData, dokter_id: e.target.value })
@@ -92,10 +92,11 @@ const ResepForm = ({
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Apoteker</label>
+          {/* Apoteker */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Apoteker</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.apoteker_id}
               onChange={(e) =>
                 setFormData({ ...formData, apoteker_id: e.target.value })
@@ -112,10 +113,11 @@ const ResepForm = ({
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Obat</label>
+          {/* Obat */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Obat</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.obat_id}
               onChange={(e) =>
                 setFormData({ ...formData, obat_id: e.target.value })
@@ -131,7 +133,7 @@ const ResepForm = ({
               ))}
             </select>
             {selectedObat && (
-              <div className="mt-2 text-sm text-gray-600">
+              <div className="mt-2 text-xs text-gray-600">
                 <p>Harga: Rp {selectedObat.harga_satuan?.toLocaleString()}</p>
                 <p>
                   Stok tersedia: {selectedObat.stok} {selectedObat.satuan}
@@ -141,13 +143,11 @@ const ResepForm = ({
           </div>
 
           {/* Jumlah Obat */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Jumlah Obat
-            </label>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Jumlah Obat</label>
             <input
               type="number"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.jumlah_obat}
               onChange={(e) =>
                 setFormData({ ...formData, jumlah_obat: e.target.value })
@@ -156,26 +156,25 @@ const ResepForm = ({
               required
               min="1"
               max={selectedObat?.stok || 1000}
-              />
-              {/* Mirip seperti di Pilih Obat, menampilkan total harga sesuai jumlah obat */}
-              {selectedObat && (
-                <div className="mt-2 text-sm text-gray-600">
-                  <p>
-                    Total Harga: Rp{" "}
-                    {(
-                      formData.jumlah_obat * selectedObat.harga_satuan
-                    ).toLocaleString()}
-                  </p>
-                </div>
-              )}
+            />
+            {selectedObat && (
+              <div className="mt-2 text-xs text-gray-600">
+                <p>
+                  Total Harga: Rp{" "}
+                  {(
+                    formData.jumlah_obat * selectedObat.harga_satuan
+                  ).toLocaleString()}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Dosis */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Dosis</label>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Dosis</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               placeholder="Contoh: 1x sehari"
               value={formData.dosis}
               onChange={(e) =>
@@ -187,14 +186,12 @@ const ResepForm = ({
           </div>
 
           {/* Aturan Pakai */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Aturan Pakai
-            </label>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Aturan Pakai</label>
             <textarea
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               placeholder="Contoh: Setelah makan"
-              rows="3"
+              rows="2"
               value={formData.aturan_pakai}
               onChange={(e) =>
                 setFormData({ ...formData, aturan_pakai: e.target.value })
@@ -203,13 +200,12 @@ const ResepForm = ({
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Tanggal Resep
-            </label>
+          {/* Tanggal Resep */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Tanggal Resep</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.tanggal_resep}
               onChange={(e) =>
                 setFormData({ ...formData, tanggal_resep: e.target.value })
@@ -219,49 +215,45 @@ const ResepForm = ({
             />
           </div>
 
-          {/* Status dan Apoteker (jika resep sudah ada) */}
+          {/* Status Resep */}
           {resep && (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">
-                  Status Resep
-                </label>
-                <select
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                  value={formData.status_resep}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      status_resep: e.target.value,
-                    })
-                  }
-                  disabled={isDokter}
-                >
-                  <option value="menunggu">Menunggu</option>
-                  <option value="diproses">Diproses</option>
-                  <option value="selesai">Selesai</option>
-                </select>
-              </div>
-            </>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Status Resep</label>
+              <select
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
+                value={formData.status_resep}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    status_resep: e.target.value,
+                  })
+                }
+                disabled={isDokter}
+              >
+                <option value="menunggu">Menunggu</option>
+                <option value="diproses">Diproses</option>
+                <option value="selesai">Selesai</option>
+              </select>
+            </div>
           )}
 
           {/* Tombol */}
-          <div className="flex space-x-4">
+          <div className="col-span-2 flex justify-end gap-3 mt-4">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="bg-gray-300 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-400 transition"
+            >
+              Batal
+            </button>
             {!isApoteker && (
               <button
                 type="submit"
-                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
               >
                 {resep ? "Update" : "Simpan"}
               </button>
             )}
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
-            >
-              Batal
-            </button>
           </div>
         </form>
       </div>
@@ -270,4 +262,3 @@ const ResepForm = ({
 };
 
 export default ResepForm;
-
