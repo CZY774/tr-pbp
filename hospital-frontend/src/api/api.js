@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = "http://localhost:8001/api";
+const API_BASE_URL = "http://localhost:8000/api";
 const API_AUTH_BASE = "http://localhost:8001/api";
 // axios.post(`${API_AUTH_BASE}/login`, { email, password })
 

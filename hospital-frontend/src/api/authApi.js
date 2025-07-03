@@ -1,5 +1,5 @@
 // authApi.js
-const API_AUTH_BASE = "http://localhost:8000/api";
+const API_AUTH_BASE = "http://localhost:8001/api";
 
 const authApi = {
   login: (credentials) =>
