@@ -4,8 +4,7 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     pasien_id: kunjungan?.pasien_id || "",
     dokter_id: kunjungan?.dokter_id || "",
-    tanggal_kunjungan:
-      kunjungan?.tanggal_kunjungan || new Date().toISOString().split("T")[0],
+    tanggal_kunjungan: kunjungan?.tanggal_kunjungan || new Date().toISOString().split("T")[0],
     jam_kunjungan: kunjungan?.jam_kunjungan || "08:00",
     keluhan: kunjungan?.keluhan || "",
     diagnosis: kunjungan?.diagnosis || "",
@@ -20,21 +19,20 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-96 max-h-screen overflow-y-auto">
-        <h3 className="text-lg font-bold mb-4">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-auto">
+        <h3 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
           {kunjungan ? "Edit Kunjungan" : "Tambah Kunjungan"}
         </h3>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Pasien</label>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+          {/* Pasien */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Pasien</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.pasien_id}
-              onChange={(e) =>
-                setFormData({ ...formData, pasien_id: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, pasien_id: e.target.value })}
               required
             >
               <option value="">Pilih Pasien</option>
@@ -46,14 +44,13 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Dokter</label>
+          {/* Dokter */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Dokter</label>
             <select
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.dokter_id}
-              onChange={(e) =>
-                setFormData({ ...formData, dokter_id: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, dokter_id: e.target.value })}
               required
             >
               <option value="">Pilih Dokter</option>
@@ -65,101 +62,86 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Tanggal Kunjungan
-            </label>
+          {/* Tanggal Kunjungan */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Tanggal Kunjungan</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.tanggal_kunjungan}
-              onChange={(e) =>
-                setFormData({ ...formData, tanggal_kunjungan: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, tanggal_kunjungan: e.target.value })}
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Jam Kunjungan
-            </label>
+          {/* Jam Kunjungan */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Jam Kunjungan</label>
             <input
               type="time"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.jam_kunjungan}
-              onChange={(e) =>
-                setFormData({ ...formData, jam_kunjungan: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, jam_kunjungan: e.target.value })}
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Keluhan</label>
+          {/* Keluhan */}
+          <div className="col-span-2">
+            <label className="block text-sm font-medium mb-1 text-gray-700">Keluhan</label>
             <textarea
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
+              rows="2"
               placeholder="Contoh: Demam, batuk, pilek, dll"
-              rows="3"
               value={formData.keluhan}
-              onChange={(e) =>
-                setFormData({ ...formData, keluhan: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, keluhan: e.target.value })}
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Diagnosis</label>
+          {/* Diagnosis */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Diagnosis</label>
             <textarea
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
+              rows="2"
               placeholder="Contoh: Tipes, flu, dll"
-              rows="3"
               value={formData.diagnosis}
-              onChange={(e) =>
-                setFormData({ ...formData, diagnosis: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, diagnosis: e.target.value })}
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Tindakan</label>
+          {/* Tindakan */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Tindakan</label>
             <textarea
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
+              rows="2"
               placeholder="Contoh: Obat, pemeriksaan, dll"
-              rows="3"
               value={formData.tindakan}
-              onChange={(e) =>
-                setFormData({ ...formData, tindakan: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, tindakan: e.target.value })}
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Biaya Konsultasi
-            </label>
+          {/* Biaya Konsultasi */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Biaya Konsultasi</label>
             <input
               type="number"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
               value={formData.biaya_konsultasi}
-              onChange={(e) =>
-                setFormData({ ...formData, biaya_konsultasi: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, biaya_konsultasi: e.target.value })}
               min="0"
             />
           </div>
 
+          {/* Status Kunjungan */}
           {kunjungan && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Status Kunjungan
-              </label>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Status Kunjungan</label>
               <select
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
                 value={formData.status_kunjungan}
-                onChange={(e) =>
-                  setFormData({ ...formData, status_kunjungan: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, status_kunjungan: e.target.value })}
               >
                 <option value="menunggu">Menunggu</option>
                 <option value="selesai">Selesai</option>
@@ -168,19 +150,20 @@ const KunjunganForm = ({ kunjungan, pasiens, dokters, onSubmit, onCancel }) => {
             </div>
           )}
 
-          <div className="flex space-x-4">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-            >
-              {kunjungan ? "Update" : "Simpan"}
-            </button>
+          {/* Buttons */}
+          <div className="col-span-2 flex justify-end gap-3 mt-4">
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+              className="bg-gray-300 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-400 transition"
             >
               Batal
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+            >
+              {kunjungan ? "Update" : "Simpan"}
             </button>
           </div>
         </form>
