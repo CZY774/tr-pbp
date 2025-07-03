@@ -149,8 +149,8 @@ const LandingPage = ({ onLoginClick }) => {
               </div>
               <div>
                 <h4 className="font-semibold mb-1">Alamat</h4>
-                <p className="text-blue-100">Jl. Kesehatan No. 123</p>
-                <p className="text-blue-100">Surakarta, Jawa Tengah</p>
+                <p className="text-blue-100">Jl. Sawosaro No. 3</p>
+                <p className="text-blue-100">Salatiga, Jawa Tengah</p>
               </div>
             </div>
             
