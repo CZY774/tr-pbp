@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2, FileText } from "lucide-react";
 import api from "../../api/api";
 import authApi from "../../api/authApi";
 import obatApi from "../../api/obatApi";
+import resepApi from "../../api/resepApi";
 import ResepForm from "./ResepForm";
 
 const ResepManager = ({ token }) => {
@@ -32,7 +33,7 @@ const ResepManager = ({ token }) => {
   const fetchReseps = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/reseps", token);
+      const response = await resepApi.get("/reseps", token);
       const data = await response.json();
       setReseps(data);
     } catch (error) {
@@ -85,9 +86,9 @@ const ResepManager = ({ token }) => {
   const handleSubmit = async (formData) => {
     try {
       if (editingResep) {
-        await api.put(`/reseps/${editingResep.id}`, formData, token);
+        await resepApi.put(`/reseps/${editingResep.id}`, formData, token);
       } else {
-        await api.post("/reseps", formData, token);
+        await resepApi.post("/reseps", formData, token);
       }
       fetchReseps();
       setShowForm(false);
@@ -101,7 +102,7 @@ const ResepManager = ({ token }) => {
   const handleDelete = async (id) => {
     if (confirm("Yakin ingin menghapus resep ini?")) {
       try {
-        await api.delete(`/reseps/${id}`, token);
+        await resepApi.delete(`/reseps/${id}`, token);
         fetchReseps();
       } catch (error) {
         console.error("Error deleting resep:", error);
@@ -111,7 +112,7 @@ const ResepManager = ({ token }) => {
 
   const handleCompleteResep = async (id) => {
     try {
-      await api.put(`/reseps/${id}`,
+      await resepApi.put(`/reseps/${id}`,
         { status_resep: "selesai" },
         token
       );

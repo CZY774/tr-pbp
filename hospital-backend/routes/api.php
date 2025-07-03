@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ResepController;
 use App\Http\Controllers\Api\KunjunganController;
 
 Route::get('/user', function (Request $request) {
@@ -13,9 +12,6 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     // Kunjungan routes
     Route::apiResource('kunjungans', KunjunganController::class);
-    
-    // Resep routes
-    Route::apiResource('reseps', ResepController::class);
     
     // Additional routes for dashboard
     Route::get('/dashboard/stats', function () {

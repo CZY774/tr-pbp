@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
 
+// Helper to format date to yyyy-MM-dd
+function formatDateToInput(date) {
+  if (!date) return "";
+  if (typeof date === "string" && date.length === 10 && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return date;
+  }
+  const d = new Date(date);
+  if (isNaN(d)) return "";
+  return d.toISOString().split("T")[0];
+}
+
 const ResepForm = ({
   resep,
   kunjungans,
@@ -18,7 +29,7 @@ const ResepForm = ({
     aturan_pakai: resep?.aturan_pakai || "",
     status_resep: resep?.status_resep || "menunggu",
     apoteker_id: resep?.apoteker_id || "",
-    tanggal_resep: resep?.tanggal_resep || new Date().toISOString().split("T")[0],
+    tanggal_resep: formatDateToInput(resep?.tanggal_resep) || formatDateToInput(new Date()),
   });
 
   const [selectedObat, setSelectedObat] = useState(null);
@@ -206,9 +217,9 @@ const ResepForm = ({
             <input
               type="date"
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-400"
-              value={formData.tanggal_resep}
+              value={formatDateToInput(formData.tanggal_resep)}
               onChange={(e) =>
-                setFormData({ ...formData, tanggal_resep: e.target.value })
+                setFormData({ ...formData, tanggal_resep: formatDateToInput(e.target.value) })
               }
               disabled={isApoteker}
               required
