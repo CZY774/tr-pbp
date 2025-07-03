@@ -20,8 +20,15 @@ const LoginForm = ({ onLogin, loading }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <button
+          type="button"
+          className="mb-4 text-blue-500 hover:underline text-sm flex items-center"
+          onClick={() => window.location.href = "/"}
+        >
+          ← Kembali ke Landing Page
+        </button>
         <h2 className="text-2xl font-bold text-center mb-6 text-blue-600">
-          Sistem Informasi Rumah Sakit
+          Sistem Informasi Rumah Sakit Étoile Santé
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

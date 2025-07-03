@@ -35,7 +35,7 @@ const Header = ({ user, onLogout, onEditProfile }) => {
   return (
     <header className="bg-blue-600 text-white p-4 shadow-md">
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">SIRS - Rawat Jalan</h1>
+        <h1 className="text-xl font-bold">Rumah Sakit Étoile Santé</h1>
 
         <div className="relative" ref={dropdownRef}>
           {/* User Profile Button */}

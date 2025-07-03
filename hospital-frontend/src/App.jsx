@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LoginForm from "./components/auth/LoginForm";
+import LandingPage from "./components/LandingPage";
 import Header from "./components/common/Header";
 import Sidebar from "./components/common/Sidebar";
 import Dashboard from "./components/dashboard/Dashboard";
@@ -19,6 +20,7 @@ const HospitalApp = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [loading, setLoading] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -87,7 +89,11 @@ const HospitalApp = () => {
     setShowEditProfile(false);
   };
 
+
   if (!token) {
+    if (!showLogin) {
+      return <LandingPage onLoginClick={() => setShowLogin(true)} />;
+    }
     return <LoginForm onLogin={login} loading={loading} />;
   }
 
