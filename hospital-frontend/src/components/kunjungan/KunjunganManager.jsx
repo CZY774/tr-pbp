@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, FileText } from "lucide-react";
 import api from "../../api/api";
+import authApi from "../../api/authApi";
+import pasienApi from "../../api/pasienApi";
 import KunjunganForm from "./KunjunganForm";
 
 const KunjunganManager = ({ token }) => {
@@ -20,8 +22,8 @@ const KunjunganManager = ({ token }) => {
         setLoading(true);
         const [kunjungansRes, pasiensRes, doktersRes] = await Promise.all([
           api.get("/kunjungans", token),
-          api.get("/pasiens", token),
-          api.get("/dokters", token),
+          pasienApi.get("/pasiens", token),
+          authApi.get("/dokters", token),
         ]);
 
         setKunjungans(await kunjungansRes.json());

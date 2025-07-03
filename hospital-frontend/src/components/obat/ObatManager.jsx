@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
-import api from "../../api/api";
+import obatApi from "../../api/obatApi";
 import ObatForm from "./ObatForm";
 
 const ObatManager = ({ token }) => {
@@ -17,7 +17,7 @@ const ObatManager = ({ token }) => {
   const fetchObats = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/obats", token);
+      const response = await obatApi.get("/obats", token);
       const data = await response.json();
       setObats(data);
     } catch (error) {
@@ -30,9 +30,9 @@ const ObatManager = ({ token }) => {
   const handleSubmit = async (formData) => {
     try {
       if (editingObat) {
-        await api.put(`/obats/${editingObat.id}`, formData, token);
+        await obatApi.put(`/obats/${editingObat.id}`, formData, token);
       } else {
-        await api.post("/obats", formData, token);
+        await obatApi.post("/obats", formData, token);
       }
       fetchObats();
       setShowForm(false);
@@ -45,7 +45,7 @@ const ObatManager = ({ token }) => {
   const handleDelete = async (id) => {
     if (confirm("Yakin ingin menonaktifkan obat ini?")) {
       try {
-        await api.delete(`/obats/${id}`, token);
+        await obatApi.delete(`/obats/${id}`, token);
         fetchObats();
       } catch (error) {
         console.error("Error deleting obat:", error);

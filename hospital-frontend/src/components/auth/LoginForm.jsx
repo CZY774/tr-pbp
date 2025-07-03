@@ -60,13 +60,7 @@ const LoginForm = ({ onLogin, loading }) => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <div className="mt-4 text-sm text-gray-600">
-          <p>Demo accounts:</p>
-          <p>admin / password</p>
-          <p>dr_budi / password</p>
-          <p>apt_sari / password</p>
-        </div>
-        <div className="mt-4 text-center">
+        <div className="mt-4 mb-10 text-center">
           <button
             type="button"
             className="text-blue-500 hover:underline text-sm"
@@ -74,6 +68,12 @@ const LoginForm = ({ onLogin, loading }) => {
           >
             Lupa Password?
           </button>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          <p>Demo accounts:</p>
+          <p>admin / password</p>
+          <p>dr_budi / password</p>
+          <p>apt_sari / password</p>
         </div>
       </div>
     </div>

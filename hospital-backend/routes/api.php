@@ -2,11 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ObatController;
 use App\Http\Controllers\Api\ResepController;
-use App\Http\Controllers\Api\PasienController;
 use App\Http\Controllers\Api\KunjunganController;
 
 Route::get('/user', function (Request $request) {
@@ -15,14 +11,8 @@ Route::get('/user', function (Request $request) {
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Pasien routes
-    Route::apiResource('pasiens', PasienController::class);
-    
     // Kunjungan routes
     Route::apiResource('kunjungans', KunjunganController::class);
-    
-    // Obat routes
-    Route::apiResource('obats', ObatController::class);
     
     // Resep routes
     Route::apiResource('reseps', ResepController::class);
