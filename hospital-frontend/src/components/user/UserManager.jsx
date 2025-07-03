@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2 } from "lucide-react";
-import api from "../../api/api";
+import api from "../../api/authApi";
 import UserForm from "./UserForm";
 
 const UserManager = ({ token }) => {

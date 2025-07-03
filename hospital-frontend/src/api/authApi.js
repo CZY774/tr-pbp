@@ -9,6 +9,43 @@ const authApi = {
       body: JSON.stringify(credentials),
     }),
 
+  get: (endpoint, token) =>
+    fetch(`${API_AUTH_BASE}${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }),
+
+  post: (endpoint, data, token) =>
+    fetch(`${API_AUTH_BASE}${endpoint}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }),
+
+  put: (endpoint, data, token) =>
+    fetch(`${API_AUTH_BASE}${endpoint}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }),
+
+  delete: (endpoint, token) =>
+    fetch(`${API_AUTH_BASE}${endpoint}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }),
+
   logout: (token) =>
     fetch(`${API_AUTH_BASE}/logout`, {
       method: "POST",
@@ -16,41 +53,6 @@ const authApi = {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }),
-
-  getProfile: (token) =>
-    fetch(`${API_AUTH_BASE}/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }),
-
-  changePassword: (data, token) =>
-    fetch(`${API_AUTH_BASE}/profile/change-password`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }),
-
-  updateProfile: (data, token) =>
-    fetch(`${API_AUTH_BASE}/profile`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }),
-
-  forgotPassword: (data) =>
-    fetch(`${API_AUTH_BASE}/forgot-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
     }),
 };
 
